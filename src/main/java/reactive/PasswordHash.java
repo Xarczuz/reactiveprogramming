@@ -7,6 +7,7 @@ import java.security.SecureRandom;
 import java.security.spec.InvalidKeySpecException;
 import java.util.Arrays;
 import java.util.Base64;
+import java.util.Optional;
 
 public class PasswordHash {
     private static final int ITERATIONS = 65536;
@@ -14,9 +15,9 @@ public class PasswordHash {
     private static final int SALT_LENGTH = 8;
     private static final String ALGORITHM = "PBKDF2WithHmacSHA512";
 
-    public static PasswordAndSalt hashFirstPassword(String password) {
+    public static Optional<PasswordAndSalt> hashFirstPassword(String password) {
         String salt = generateSalt();
-        return new PasswordAndSalt(hashPassword(password, salt), salt);
+        return hashPassword(password, salt).map(s -> new PasswordAndSalt(s, salt));
     }
 
     public static String generateSalt() {
@@ -26,7 +27,7 @@ public class PasswordHash {
         return Base64.getEncoder().encodeToString(salt);
     }
 
-    public static String hashPassword(String password, String salt) {
+    public static Optional<String> hashPassword(String password, String salt) {
         char[] chars = password.toCharArray();
         byte[] bytes = salt.getBytes();
 
@@ -36,13 +37,10 @@ public class PasswordHash {
         try {
             SecretKeyFactory fac = SecretKeyFactory.getInstance(ALGORITHM);
             byte[] securePassword = fac.generateSecret(spec).getEncoded();
-
-            return (Base64.getEncoder().encodeToString(securePassword));
-
+            return Optional.ofNullable((Base64.getEncoder().encodeToString(securePassword)));
         } catch (NoSuchAlgorithmException | InvalidKeySpecException ex) {
-            System.err.println("Exception encountered in hashPassword()");
-            return "";
-
+            System.err.println("Exception encountered in hashPassword() " + ex.getMessage());
+            return Optional.empty();
         } finally {
             spec.clearPassword();
         }

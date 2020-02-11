@@ -16,6 +16,6 @@ public class AuthService {
 
     public Mono<Boolean> validateUsernameAndPassword(String username, String password) {
         return Mono.justOrEmpty(userRepository.findByUsername(username)
-                .map(user -> user.getPassword().equals(PasswordHash.hashPassword(password, user.getSalt()))));
+                .map(user -> user.getPassword().equals(PasswordHash.hashPassword(password, user.getSalt()).orElseThrow())));
     }
 }

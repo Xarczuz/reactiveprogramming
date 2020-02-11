@@ -1,8 +1,5 @@
 package reactive;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import reactive.service.AuthService;
-
 import javax.persistence.*;
 
 

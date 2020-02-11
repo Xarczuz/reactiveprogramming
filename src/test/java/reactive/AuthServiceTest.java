@@ -36,6 +36,16 @@ class AuthServiceTest {
         Mono<Boolean> validatedMono = authService.validateUsernameAndPassword("testtest", "testtst");
         validatedMono.blockOptional().ifPresent(Assertions::assertFalse);
     }
+    @Test
+    void login_user_wrong_password2() {
+        Mono<Boolean> validatedMono = authService.validateUsernameAndPassword("testtest", "te234sttst");
+        validatedMono.blockOptional().ifPresent(Assertions::assertFalse);
+    }
+    @Test
+    void login_user_wrong_password3() {
+        Mono<Boolean> validatedMono = authService.validateUsernameAndPassword("testtest", "testt");
+        validatedMono.blockOptional().ifPresent(Assertions::assertFalse);
+    }
 
     @Test
     void login_user_wrong_username() {
